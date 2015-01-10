@@ -204,12 +204,16 @@ function! startify#session_save(...) abort
   if exists('a:1')
     let sname = a:1
 
-  " Case when there are no save arguments
-  elseif s:session_default_name != ""
-    let sname = s:session_default_name
+  " Case when there are no save arguments, check to see if a session is
+  " already open. If not, then use the default session name.
   else
     call inputsave()
-    let sname = input('Save under this session name: ', fnamemodify(v:this_session, ':t'), 'custom,startify#session_list_as_string')
+    let session_name = fnamemodify(v:this_session, ':t')
+    if session_name == ''
+      let session_name = s:session_default_name
+    endif
+
+    let sname = input('Save under this session name: ', session_name, 'custom,startify#session_list_as_string')
     call inputrestore()
     redraw
     if empty(sname)
