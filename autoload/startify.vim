@@ -101,6 +101,8 @@ function! startify#insane_in_the_membrane() abort
         \ 'bookmarks',
         \ ])
 
+  " Finally prints the list to the screen. Fails if a string in
+  " s:lists is not of: 'files', 'dir', 'sessions', or 'bookmarks'
   for item in s:lists
     if type(item) == 1
       call s:show_{item}()
@@ -329,12 +331,14 @@ endfunction
 
 " Function: #session_list {{{1
 function! startify#session_list(lead, ...) abort
-  return map(split(globpath(s:session_dir, '*'.a:lead.'*'), '\n'), 'fnamemodify(v:val, ":t")')
+  let session_names = split(globpath(s:session_dir, '*'.a:lead.'*'), '\n')
+  return map(session_names, 'fnamemodify(v:val, ":t")')
 endfunction
 
 " Function: #session_list_as_string {{{1
 function! startify#session_list_as_string(lead, ...) abort
-  return join(map(split(globpath(s:session_dir, '*'.a:lead.'*'), '\n'), 'fnamemodify(v:val, ":t")'), "\n")
+  let session_names = split(globpath(s:session_dir, '*'.a:lead.'*'), '\n')
+  return join(map(session_names, 'fnamemodify(v:val, ":t")'), "\n")
 endfunction
 
 " Function: #open_buffers {{{1
@@ -451,7 +455,7 @@ endfunction
 
 " Function: s:show_sessions {{{1
 function! s:show_sessions() abort
-  let sfiles = split(globpath(s:session_dir, '*'), '\n')
+  let sfiles = split(globpath(s:session_dir, '*.vim'), '\n')
   if empty(sfiles)
     if exists('s:last_message')
       unlet s:last_message
